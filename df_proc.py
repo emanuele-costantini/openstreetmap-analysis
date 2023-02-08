@@ -197,7 +197,11 @@ class TagsDictDF:
                 df = df.reset_index()
 
                 if obj == "manto_stradale":
-                    df = df[df["highway"].isin(highway_filt_manto)]
+                    df = df[
+                        df["highway"].isin(
+                            list(set(highway_filt_manto) & set(df.columns))
+                        )
+                    ]
                     df["surface_mapped"] = np.where(
                         df["surface"] == "asphalt", "asphalt", "other"
                     )
