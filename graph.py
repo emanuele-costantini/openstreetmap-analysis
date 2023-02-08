@@ -12,9 +12,9 @@ from util import mean_centrality_road, time_decorator
 class CityGraph:
 
     CENTRALITY_METRICS = {
-        # "betweenness_c": time_decorator(nx.betweenness_centrality),
-        # "degree_c": time_decorator(nx.degree_centrality),
-        # "close_c": time_decorator(nx.closeness_centrality),
+        "betweenness_c": time_decorator(nx.betweenness_centrality),
+        "degree_c": time_decorator(nx.degree_centrality),
+        "close_c": time_decorator(nx.closeness_centrality),
         "pagerank": time_decorator(nx.pagerank),
     }
 
