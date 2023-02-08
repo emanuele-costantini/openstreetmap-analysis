@@ -5,16 +5,7 @@ import os
 import warnings
 import argparse
 
-warnings.filterwarnings("ignore")
 logger = custom_logger()
-
-parser = argparse.ArgumentParser(
-    description="Extract and process OpenStreetMap data for a specific city."
-)
-parser.add_argument(
-    "-c",
-    "--city",
-)
 
 
 def create_save_roads_dataframe(city="Milan", network_type="drive") -> None:
@@ -34,7 +25,7 @@ def create_save_roads_dataframe(city="Milan", network_type="drive") -> None:
     roads = RD.df_avg_curveness(roads, first_method=False)
 
     final_df = g.compute_merge_centrality_metrics(roads)
-    RD.to_csv(final_df)
+    RD.to_csv(final_df, city)
 
 
 def create_save_items_dataframe(nan_cols_thres=.3, city="Milan") -> None:
@@ -46,11 +37,26 @@ def create_save_items_dataframe(nan_cols_thres=.3, city="Milan") -> None:
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Extract and process OSM data for the specified city"
+    )
+    parser.add_argument(
+        "-c",
+        "--city",
+        type=str,
+        required=True,
+    )
+    city = parser.parse_args().city
     if not os.path.isdir(DIR.OSM_DIR):
         os.mkdir(DIR.OSM_DIR)
-    create_save_roads_dataframe()
-    create_save_items_dataframe()
+    city_dir_path = os.path.join(DIR.OSM_DIR, city)
+    if not os.path.isdir(city_dir_path):
+        os.mkdir(city_dir_path)
+
+    create_save_roads_dataframe(city=city)
+    create_save_items_dataframe(city=city)
 
 
 if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
     main()

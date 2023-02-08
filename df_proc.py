@@ -69,8 +69,7 @@ class RoadsDataFrame:
         roads_df["tmp"] = roads_df["u"] + roads_df["v"]
         roads_df = roads_df.groupby(["tmp", "name"]).first().reset_index()
 
-        roads_df.drop(
-            columns=[
+        cols = [
                 "point_osmid_u",
                 "point_osmid_v",
                 "key",
@@ -84,8 +83,11 @@ class RoadsDataFrame:
                 "width",
                 "est_width",
                 "tmp",
-            ],
-            inplace=True
+            ]
+
+        roads_df.drop(
+            columns=list(set(cols) & set(roads_df.columns)),
+            inplace=True,
         )
         return roads_df
 
@@ -125,13 +127,13 @@ class RoadsDataFrame:
         return df_in
 
     @staticmethod
-    def to_csv(df) -> None:
-        df_path = os.path.join(DIR.OSM_DIR, RoadsDataFrame.ROADS_DF_NAME + ".csv")
-        if not os.path.isfile(df_path):
-            logging.info("Saving {}...".format(RoadsDataFrame.ROADS_DF_NAME))
-            df.to_csv(df_path, index=False)
-        else:
-            logging.warning("File {} already exists".format(df_path))
+    def to_csv(df, city) -> None:
+        df_path = os.path.join(DIR.OSM_DIR, city, RoadsDataFrame.ROADS_DF_NAME + ".csv")
+        if os.path.isfile(df_path):
+            logging.warning("File {} already exists, removing it".format(RoadsDataFrame.ROADS_DF_NAME))
+            os.remove(df_path)
+        logging.info("Saving {}...".format(RoadsDataFrame.ROADS_DF_NAME))
+        df.to_csv(df_path, index=False)
 
 
 class TagsDictDF:
@@ -180,36 +182,36 @@ class TagsDictDF:
         ]
 
         for obj, query in self.__class__.TAGS.items():
-            logging.info("Retrieving {}".format(obj))
-            df = ox.geometries_from_place(
-                self.city,
-                query,
-            )
-            df = df.reset_index()
+            df_path = os.path.join(DIR.OSM_DIR, self.city, obj + ".csv")
+            if not os.path.isfile(df_path):
+                logging.info("Retrieving {}".format(obj))
+                df = ox.geometries_from_place(
+                    self.city,
+                    query,
+                )
+                df = df.reset_index()
 
-            if obj == "manto_stradale":
-                df = df[df["highway"].isin(highway_filt_manto)]
-                df["surface_mapped"] = np.where(df["surface"] == "asphalt", "asphalt", "other")
-            col_list = [col for col in df.columns if col != "nodes"] if obj in ["rotatoria", "rotaie_tram",
-                                                                                "manto_stradale"] else df.columns
+                if obj == "manto_stradale":
+                    df = df[df["highway"].isin(highway_filt_manto)]
+                    df["surface_mapped"] = np.where(df["surface"] == "asphalt", "asphalt", "other")
+                col_list = [col for col in df.columns if col != "nodes"] if obj in ["rotatoria", "rotaie_tram",
+                                                                                    "manto_stradale"] else df.columns
 
-            nan_dict = {col: df[col].isna().sum() / df.shape[0] for col in col_list}
-            df = df[[col for col, v in nan_dict.items() if v < self.nan_cols_thres]]
+                nan_dict = {col: df[col].isna().sum() / df.shape[0] for col in col_list}
+                df = df[[col for col, v in nan_dict.items() if v < self.nan_cols_thres]]
 
-            unique_v_dict = {col: df[col].unique().shape[0] for col in df.columns}
-            df = df[[col for col, v in unique_v_dict.items() if v > 1]]
+                unique_v_dict = {col: df[col].unique().shape[0] for col in df.columns}
+                df = df[[col for col, v in unique_v_dict.items() if v > 1]]
 
-            df_dict[obj] = df
-
-            return df_dict
+                df_dict[obj] = df
+            else:
+                logging.warning("File {} already exists".format(df_path))
+        return df_dict
 
     def df_dict_to_csv(self) -> None:
         for name, df in self.df_dict.items():
-            df_path = os.path.join(DIR.OSM_DIR, name + ".csv")
-            if not os.path.isfile(df_path):
-                logging.info("Saving {}...".format(name))
-                df.to_csv(df_path, index=False)
-            else:
-                logging.warning("File {} already exists".format(df_path))
+            df_path = os.path.join(DIR.OSM_DIR, self.city, name + ".csv")
+            logging.info("Saving {}...".format(name))
+            df.to_csv(df_path, index=False)
 
 

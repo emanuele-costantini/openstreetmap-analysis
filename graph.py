@@ -6,7 +6,6 @@ import logging
 from util import (
     time_decorator,
     mean_centrality_road,
-    FileDirNames as DIR,
 )
 import pandas as pd
 from functools import cached_property
@@ -54,10 +53,8 @@ class CityGraph:
 
         return n_nodes, n_edges
 
-    @time_decorator
     def compute_centrality(self, centrality_func: Callable) -> pd.DataFrame:
         centrality_dict = centrality_func(self.graph)
-        print()
         centrality_df = pd.DataFrame(
             centrality_dict.items(),
             columns=["node", centrality_func.__name__]

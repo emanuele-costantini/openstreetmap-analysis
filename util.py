@@ -132,7 +132,7 @@ class CustomFormatter(logging.Formatter):
     format = "%(asctime)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
 
     FORMATS = {
-        logging.DEBUG: blue + format + reset,
+        logging.DEBUG: grey + format + reset,
         logging.INFO: blue + format + reset,
         logging.WARNING: yellow + format + reset,
         logging.ERROR: red + format + reset,
