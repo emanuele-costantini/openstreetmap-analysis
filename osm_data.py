@@ -2,8 +2,19 @@ from graph import CityGraph as CG
 from util import custom_logger, FileDirNames as DIR
 from df_proc import RoadsDataFrame as RD, TagsDictDF as TD
 import os
+import warnings
+import argparse
 
+warnings.filterwarnings("ignore")
 logger = custom_logger()
+
+parser = argparse.ArgumentParser(
+    description="Extract and process OpenStreetMap data for a specific city."
+)
+parser.add_argument(
+    "-c",
+    "--city",
+)
 
 
 def create_save_roads_dataframe(city="Milan", network_type="drive") -> None:
@@ -31,11 +42,12 @@ def create_save_items_dataframe(nan_cols_thres=.3, city="Milan") -> None:
         nan_cols_thres=nan_cols_thres,
         city=city,
     )
-    TD.df_dict_to_csv()
+    tags_df.df_dict_to_csv()
 
 
 def main():
-    os.mkdir(DIR.OSM_DIR)
+    if not os.path.isdir(DIR.OSM_DIR):
+        os.mkdir(DIR.OSM_DIR)
     create_save_roads_dataframe()
     create_save_items_dataframe()
 
