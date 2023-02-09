@@ -22,16 +22,16 @@ def time_decorator(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         start_time = time.perf_counter()
-        logging.info(f"Starting function {func.__name__}...")
+        logging.info(f"Computing {func.__name__}...")
         result = func(*args, **kwargs)
         end_time = time.perf_counter()
         total_time = end_time - start_time
         if total_time <= 60:
             final_time = total_time
-            logging.info(f"Function {func.__name__} took {final_time:.2f} seconds")
+            logging.info(f"{func.__name__} took {final_time:.2f} seconds")
         else:
             final_time = total_time / 60
-            logging.info(f"Function {func.__name__} took {final_time:.2f} minutes")
+            logging.info(f"{func.__name__} took {final_time:.2f} minutes")
         return result
 
     return wrapper
