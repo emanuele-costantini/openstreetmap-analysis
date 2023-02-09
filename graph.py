@@ -12,12 +12,12 @@ from util import mean_centrality_road, time_decorator
 class CityGraph:
 
     CENTRALITY_METRICS = {
-        "betweenness": time_decorator(nx.betweenness_centrality),
+        "pagerank": time_decorator(nx.pagerank),
         "in_degree": time_decorator(nx.in_degree_centrality),
         "out_degree": time_decorator(nx.out_degree_centrality),
         "degree": time_decorator(nx.degree_centrality),
-        "close": time_decorator(nx.closeness_centrality),
-        "pagerank": time_decorator(nx.pagerank),
+        "betweenness": time_decorator(nx.betweenness_centrality),
+        "closeness": time_decorator(nx.closeness_centrality),
     }
 
     def __init__(
@@ -50,40 +50,41 @@ class CityGraph:
 
         return n_nodes, n_edges
 
-    def compute_centrality(self, centrality_func: Callable) -> pd.DataFrame:
+    def compute_centrality(self, centrality_func: Callable) -> (pd.DataFrame, str):
         centrality_dict = centrality_func(self.graph)
+        centrality_col_name = centrality_func.__name__.rsplit("_", 1)[0]
         centrality_df = pd.DataFrame(
-            centrality_dict.items(), columns=["node", centrality_func.__name__]
+            centrality_dict.items(), columns=["node", centrality_col_name]
         )
 
-        return centrality_df
+        return centrality_df, centrality_col_name
 
     def compute_merge_centrality_metrics(
         self, df_to_merge: pd.DataFrame
     ) -> pd.DataFrame:
         for cen_metric, val in self.__class__.CENTRALITY_METRICS.items():
-            df_graph = self.compute_centrality(val)
+            df_graph, col = self.compute_centrality(val)
 
             df_to_merge = df_to_merge.merge(
                 df_graph, left_on="u", right_on="node", how="left"
             )
             df_to_merge = df_to_merge.drop("node", axis=1)
-            df_to_merge = df_to_merge.rename(columns={cen_metric: cen_metric + "_u"})
+            df_to_merge = df_to_merge.rename(columns={col: col + "_u"})
 
             df_to_merge = df_to_merge.merge(
                 df_graph, left_on="v", right_on="node", how="left"
             )
             df_to_merge = df_to_merge.drop("node", axis=1)
-            df_to_merge = df_to_merge.rename(columns={cen_metric: cen_metric + "_v"})
+            df_to_merge = df_to_merge.rename(columns={col: col + "_v"})
 
             tmp = (
-                df_to_merge.groupby("name")[[cen_metric + "_u", cen_metric + "_v"]]
+                df_to_merge.groupby("name")[[col + "_u", col + "_v"]]
                 .apply(
                     mean_centrality_road,
                     col_u=cen_metric + "_u",
                     col_v=cen_metric + "_v",
                 )
-                .to_frame("avg_via_" + cen_metric)
+                .to_frame("avg_via_" + col)
             )
 
             df_to_merge = df_to_merge.merge(tmp, left_on="name", right_on="name")
