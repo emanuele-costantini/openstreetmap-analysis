@@ -45,8 +45,8 @@ class CityGraph:
             raise TypeError("No graph provided as input")
         n_nodes = len(graph.nodes)
         n_edges = len(graph.edges)
-        print("Number of nodes: {}".format(n_nodes))
-        print("Number of edges: {}".format(n_edges))
+        logging.info("Number of nodes: {}".format(n_nodes))
+        logging.info("Number of edges: {}".format(n_edges))
 
         return n_nodes, n_edges
 
