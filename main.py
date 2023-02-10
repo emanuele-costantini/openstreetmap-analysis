@@ -16,8 +16,9 @@ def create_save_roads_dataframe(city="Milan", network_type="drive") -> None:
         city=city,
         network_type=network_type,
     )
-    CG.graph_stats(g)
+
     road_graph = g.graph
+    CG.graph_stats(road_graph)
     nodes, streets = RD.dfs_from_graph(road_graph)
     roads = RD.graph_df_preproc(
         nodes,
