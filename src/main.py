@@ -52,8 +52,6 @@ def main():
         required=True,
     )
     city = parser.parse_args().city
-    if not os.path.isdir(DIR.OSM_DIR):
-        os.mkdir(DIR.OSM_DIR)
     city_dir_path = os.path.join(DIR.OSM_DIR, city)
     if not os.path.isdir(city_dir_path):
         os.mkdir(city_dir_path)

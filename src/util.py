@@ -146,4 +146,4 @@ class CustomFormatter(logging.Formatter):
 
 class FileDirNames:
 
-    OSM_DIR = "../Data/Local_data"
+    OSM_DIR = "./Data"

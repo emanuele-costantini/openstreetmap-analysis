@@ -132,7 +132,7 @@ class RoadsDataFrame:
         df_path = os.path.join(DIR.OSM_DIR, city, RoadsDataFrame.ROADS_DF_NAME + ".csv")
         if os.path.isfile(df_path):
             logging.warning(
-                "File {} already exists, removing it".format(
+                "File {} already exists, overwriting it".format(
                     RoadsDataFrame.ROADS_DF_NAME
                 )
             )
