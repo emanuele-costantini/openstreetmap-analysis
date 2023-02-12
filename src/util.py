@@ -22,7 +22,7 @@ def time_decorator(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         start_time = time.perf_counter()
-        logging.info(f"Computing {func.__name__}...")
+        logging.info(f"Computing {func.__name__} algorithm on graph...")
         result = func(*args, **kwargs)
         end_time = time.perf_counter()
         total_time = end_time - start_time
@@ -52,7 +52,7 @@ def function_rename(func):
 
 def custom_logger():
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
@@ -146,4 +146,4 @@ class CustomFormatter(logging.Formatter):
 
 class FileDirNames:
 
-    OSM_DIR = "../OpenStreetMap_data"
+    OSM_DIR = "../Data/Local_data"

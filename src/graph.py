@@ -1,6 +1,6 @@
 import logging
 from functools import cached_property
-from typing import Callable, Dict, Tuple, get_type_hints
+from typing import Callable, Tuple
 
 import networkx as nx
 import osmnx as ox
