@@ -9,7 +9,7 @@ This script performs data extraction through OSM Api, retrieving the graph of ro
 Open a terminal window, then type:
 
 ```
-python main.py --city=city_you_want
+python src/main.py --city city_you_want
 ```
 
 and replace "city_you_want" with the city you are interested in.

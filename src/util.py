@@ -146,4 +146,4 @@ class CustomFormatter(logging.Formatter):
 
 class FileDirNames:
 
-    OSM_DIR = "OpenStreetMap_data"
+    OSM_DIR = "../OpenStreetMap_data"
