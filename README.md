@@ -31,6 +31,6 @@ Build the app as a container if you can't resolve issues while installing requir
    ```
 4. Run the container mounting the volume:
    ```
-   docker run --mount type=bind, source=$(readlink -f Data/Docker_volume), target=/osm/Data osm <city_you_want>
+   docker run --mount type=bind,source=$(readlink -f Data/Docker_volume),target=/osm/Data osm <city_you_want>
    ```
    The created data will be saved in Docker_volume folder.
