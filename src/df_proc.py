@@ -95,12 +95,7 @@ class RoadsDataFrame:
     @staticmethod
     def df_sub_curveness(df_in: pd.DataFrame) -> pd.DataFrame:
         logging.info("Computing sinuosity of single road segments")
-        df_in["sub_curveness"] = df_in.apply(
-            GU.compute_sub_curveness,
-            first_method=True,
-            length=None,
-            axis=1,
-        )
+        df_in["sub_curveness"] = df_in["geometry"].apply(GU.compute_sub_curveness)
         return df_in
 
     @staticmethod

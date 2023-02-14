@@ -4,7 +4,6 @@ from functools import wraps
 from statistics import mean
 from typing import Callable, List, Union, get_type_hints
 
-import geopy.distance
 import pandas as pd
 from pyproj import Transformer
 from shapely import LineString, MultiLineString, line_merge, ops, wkt
@@ -64,7 +63,7 @@ def custom_logger():
 
 class GeoUtil:
 
-    TRANSFORMER = Transformer.from_crs("EPSG:4326", "EPSG:32632", always_xy=True)
+    TRANSFORMER = Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
 
     @staticmethod
     def merge_lines(line_list: List[LineString]) -> Union[LineString, MultiLineString]:
@@ -78,21 +77,18 @@ class GeoUtil:
         return line_transformed.length
 
     @staticmethod
-    def compute_sub_curveness(
-        df: Union[pd.DataFrame, LineString], first_method: bool, length: float
-    ) -> float:
+    def compute_sub_curveness(df: LineString) -> float:
         try:
-            if first_method:
-                length = df["length"]
-                df = df["geometry"]
+            p1 = df.boundary.geoms[0]
+            p2 = df.boundary.geoms[1]
+            bounds_linestring = LineString([p1, p2])
 
-            p1 = df.boundary.geoms[0].coords
-            p2 = df.boundary.geoms[1].coords
-            air_d = geopy.distance.geodesic(p1, p2).m
-            curve = round(air_d / length, 3)
+            length = GeoUtil.compute_line_length(df)
+            air_length = GeoUtil.compute_line_length(bounds_linestring)
+            curve = round(air_length / length, 5)
         except IndexError:
             curve = 0
-        return curve
+        return 1 - curve
 
     @staticmethod
     def compute_avg_curveness(df: pd.DataFrame, first_method: bool) -> float:
@@ -104,21 +100,15 @@ class GeoUtil:
             curveness_list = []
             if isinstance(merged, MultiLineString):
                 for line in merged.geoms:
-                    curv = GeoUtil.compute_sub_curveness(
-                        line,
-                        first_method=False,
-                        length=GeoUtil.compute_line_length(line),
-                    )
+                    curv = GeoUtil.compute_sub_curveness(line)
                     curveness_list.append(curv)
                 result = mean(curveness_list)
             else:
                 result = GeoUtil.compute_sub_curveness(
                     merged,
-                    first_method=False,
-                    length=GeoUtil.compute_line_length(merged),
                 )
 
-        return round(result, 3)
+        return round(result, 5)
 
 
 class CustomFormatter(logging.Formatter):
