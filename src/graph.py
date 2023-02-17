@@ -89,5 +89,8 @@ class CityGraph:
             )
 
             df_to_merge = df_to_merge.merge(tmp, left_on="name", right_on="name")
+            df_to_merge["avg_sub" + col] = (
+                df_to_merge[col + "_u"] + df_to_merge[col + "_v"]
+            ) / 2
 
         return df_to_merge

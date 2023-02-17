@@ -123,6 +123,13 @@ class RoadsDataFrame:
         return df_in
 
     @staticmethod
+    def compute_segment_avg_adjacent_segments(roads: pd.DataFrame) -> pd.DataFrame:
+        roads["avg_sub_adjacent_roads"] = (
+            roads["street_count_u"] + roads["street_count_v"]
+        ) / 2
+        return roads
+
+    @staticmethod
     def to_csv(df, city) -> None:
         df_path = os.path.join(DIR.OSM_DIR, city, RoadsDataFrame.ROADS_DF_NAME + ".csv")
         if os.path.isfile(df_path):

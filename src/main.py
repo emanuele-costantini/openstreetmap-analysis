@@ -28,6 +28,7 @@ def create_save_roads_dataframe(city="Milan", network_type="drive") -> None:
     roads = RD.df_sub_curveness(roads)
     roads = RD.df_avg_curveness(roads, first_method=True)
     roads = RD.df_avg_curveness(roads, first_method=False)
+    roads = RD.compute_segment_avg_adjacent_segments(roads)
 
     final_df = g.compute_merge_centrality_metrics(roads)
     RD.to_csv(final_df, city)
