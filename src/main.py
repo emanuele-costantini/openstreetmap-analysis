@@ -34,7 +34,7 @@ def create_save_roads_dataframe(city="Milan", network_type="drive") -> None:
     RD.to_csv(final_df, city)
 
 
-def create_save_items_dataframe(nan_cols_thres=0.3, city="Milan") -> None:
+def create_save_items_dataframe(nan_cols_thres=0.8, city="Milan") -> None:
     tags_df = TD(
         nan_cols_thres=nan_cols_thres,
         city=city,
@@ -47,10 +47,11 @@ def main():
         description="Extract and process OSM data for the specified city"
     )
     parser.add_argument(
-        "-c",
         "--city",
         type=str,
-        required=True,
+        nargs="?",
+        const="Milan",
+        default="Milan",
     )
     city = parser.parse_args().city
     city_dir_path = os.path.join(DIR.OSM_DIR, city)

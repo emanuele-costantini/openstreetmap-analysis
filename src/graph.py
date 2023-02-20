@@ -13,8 +13,6 @@ class CityGraph:
 
     CENTRALITY_METRICS = {
         "pagerank": time_decorator(nx.pagerank),
-        "in_degree": time_decorator(nx.in_degree_centrality),
-        "out_degree": time_decorator(nx.out_degree_centrality),
         "degree": time_decorator(nx.degree_centrality),
         "betweenness": time_decorator(nx.betweenness_centrality),
         "closeness": time_decorator(nx.closeness_centrality),
@@ -89,7 +87,7 @@ class CityGraph:
             )
 
             df_to_merge = df_to_merge.merge(tmp, left_on="name", right_on="name")
-            df_to_merge["avg_sub" + col] = (
+            df_to_merge["avg_sub_" + col] = (
                 df_to_merge[col + "_u"] + df_to_merge[col + "_v"]
             ) / 2
 
